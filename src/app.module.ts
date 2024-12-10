@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AuthenticationModule } from './api/authentication/authentication.module';
 import { LessonModule } from './api/lesson/lesson.module';
+import { VocabularyModule } from './api/vocabulary/vocabulary.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import config from './app/config';
@@ -24,6 +25,7 @@ import config from './app/config';
 
     // APis implement here
     AuthenticationModule,
+    VocabularyModule,
     LessonModule,
   ],
 
