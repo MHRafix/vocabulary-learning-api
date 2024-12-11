@@ -7,8 +7,13 @@ import {
   Param,
   Patch,
   Post,
+  UseGuards,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { AuthGuard } from '@nestjs/passport';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Roles } from 'src/app/decorators/role.decorator';
+import { RolesGuard } from 'src/app/guards/role-guard';
+import { Role } from '../authentication/entities/user.entity';
 import { CreateVocabularyDto } from './dto/create-vocabulary.dto';
 import { UpdateVocabularyDto } from './dto/update-vocabulary.dto';
 import { VocabularyService } from './vocabulary.service';
@@ -19,6 +24,10 @@ export class VocabularyController {
   constructor(private readonly vocabularyService: VocabularyService) {}
 
   @Post('/create-vocabulary')
+  @ApiBearerAuth()
+  @ApiOperation({ description: 'Only admin can access ' })
+  @Roles(Role.Admin)
+  @UseGuards(AuthGuard(), RolesGuard)
   create(@Body() payload: CreateVocabularyDto) {
     try {
       return this.vocabularyService.create(payload);
@@ -28,6 +37,9 @@ export class VocabularyController {
   }
 
   @Get()
+  @ApiBearerAuth()
+  @ApiOperation({ description: 'Anyone can access ' })
+  @UseGuards(AuthGuard())
   findAll() {
     try {
       return this.vocabularyService.findAll();
@@ -37,6 +49,9 @@ export class VocabularyController {
   }
 
   @Get(':id')
+  @ApiBearerAuth()
+  @ApiOperation({ description: 'Anyone can access ' })
+  @UseGuards(AuthGuard())
   findOne(@Param('id') id: string) {
     try {
       return this.vocabularyService.findOne(id);
@@ -46,6 +61,10 @@ export class VocabularyController {
   }
 
   @Patch(':id')
+  @ApiBearerAuth()
+  @ApiOperation({ description: 'Only admin can access ' })
+  @Roles(Role.Admin)
+  @UseGuards(AuthGuard(), RolesGuard)
   async update(@Param('id') id: string, @Body() payload: UpdateVocabularyDto) {
     try {
       await this.vocabularyService.update(id, payload);
@@ -56,6 +75,10 @@ export class VocabularyController {
   }
 
   @Delete(':id')
+  @ApiBearerAuth()
+  @ApiOperation({ description: 'Only admin can access ' })
+  @Roles(Role.Admin)
+  @UseGuards(AuthGuard(), RolesGuard)
   async remove(@Param('id') id: string) {
     try {
       await this.vocabularyService.remove(id);

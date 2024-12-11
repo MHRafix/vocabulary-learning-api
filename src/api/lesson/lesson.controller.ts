@@ -7,8 +7,13 @@ import {
   Param,
   Patch,
   Post,
+  UseGuards,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { AuthGuard } from '@nestjs/passport';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Roles } from 'src/app/decorators/role.decorator';
+import { RolesGuard } from 'src/app/guards/role-guard';
+import { Role } from '../authentication/entities/user.entity';
 import { CreateLessonDto } from './dto/create-lesson.dto';
 import { UpdateLessonDto } from './dto/update-lesson.dto';
 import { LessonService } from './lesson.service';
@@ -19,6 +24,10 @@ export class LessonController {
   constructor(private readonly lessonService: LessonService) {}
 
   @Post('/create-lesson')
+  @ApiBearerAuth()
+  @ApiOperation({ description: 'Only admin can access ' })
+  @Roles(Role.Admin)
+  @UseGuards(AuthGuard(), RolesGuard)
   create(@Body() createLessonDto: CreateLessonDto) {
     try {
       return this.lessonService.create(createLessonDto);
@@ -28,6 +37,9 @@ export class LessonController {
   }
 
   @Get()
+  @ApiBearerAuth()
+  @ApiOperation({ description: 'Anyone can access ' })
+  @UseGuards(AuthGuard())
   findAll() {
     try {
       return this.lessonService.findAll();
@@ -37,6 +49,9 @@ export class LessonController {
   }
 
   @Get(':id')
+  @ApiBearerAuth()
+  @ApiOperation({ description: 'Anyone can access ' })
+  @UseGuards(AuthGuard())
   findOne(@Param('id') id: string) {
     try {
       return this.lessonService.findOne(id);
@@ -46,6 +61,10 @@ export class LessonController {
   }
 
   @Patch(':id')
+  @ApiBearerAuth()
+  @ApiOperation({ description: 'Only admin can access ' })
+  @Roles(Role.Admin)
+  @UseGuards(AuthGuard(), RolesGuard)
   async update(@Param('id') id: string, @Body() payload: UpdateLessonDto) {
     try {
       await this.lessonService.update(id, payload);
@@ -56,6 +75,10 @@ export class LessonController {
   }
 
   @Delete(':id')
+  @ApiBearerAuth()
+  @ApiOperation({ description: 'Only admin can access ' })
+  @Roles(Role.Admin)
+  @UseGuards(AuthGuard(), RolesGuard)
   async remove(@Param('id') id: string) {
     try {
       await this.lessonService.remove(id);

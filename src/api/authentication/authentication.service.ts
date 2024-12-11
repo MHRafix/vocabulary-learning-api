@@ -7,7 +7,7 @@ import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
 import * as bcrypt from 'bcryptjs';
 import { Model } from 'mongoose';
-import { LoginDto } from './dto/login.dto';
+import { LoginDto, UpdateRoleDto } from './dto/login.dto';
 import { RegistrationDto } from './dto/registration.dto';
 import { User, UserDocument } from './entities/user.entity';
 
@@ -86,5 +86,19 @@ export class AuthenticationService {
     });
 
     return { token };
+  }
+
+  async updateRole(_id: string, payload: UpdateRoleDto) {
+    const { role } = payload;
+    console.log({ _id });
+    // check is user exist
+    const isUserExist = await this.userModel.findById({ _id });
+
+    // if user is not exist
+    if (!isUserExist) {
+      throw new UnauthorizedException('User is not exist.');
+    }
+
+    return this.userModel.findByIdAndUpdate(_id, { role });
   }
 }

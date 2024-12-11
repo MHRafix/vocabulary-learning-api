@@ -1,8 +1,20 @@
-import { Body, Controller, Post } from '@nestjs/common';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  Body,
+  Controller,
+  ForbiddenException,
+  Param,
+  Patch,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Roles } from 'src/app/decorators/role.decorator';
+import { RolesGuard } from 'src/app/guards/role-guard';
 import { AuthenticationService } from './authentication.service';
-import { LoginDto } from './dto/login.dto';
+import { LoginDto, UpdateRoleDto } from './dto/login.dto';
 import { RegistrationDto } from './dto/registration.dto';
+import { Role } from './entities/user.entity';
 
 @Controller('authentication')
 @ApiTags('Authentication')
@@ -12,12 +24,37 @@ export class AuthenticationController {
   @ApiOperation({ description: 'Signup api' })
   @Post('/signup')
   signUp(@Body() payload: RegistrationDto) {
-    return this.authService.signUp(payload);
+    try {
+      return this.authService.signUp(payload);
+    } catch (error) {
+      throw new ForbiddenException('Failed to sign up.');
+    }
   }
 
   @ApiOperation({ description: 'Login api' })
   @Post('/signin')
   signIn(@Body() payload: LoginDto) {
-    return this.authService.signIn(payload);
+    try {
+      return this.authService.signIn(payload);
+    } catch (error) {
+      throw new ForbiddenException('Failed to sign in.');
+    }
+  }
+
+  @Patch(':id')
+  @ApiBearerAuth()
+  @ApiOperation({ description: 'Only admin can access ' })
+  @Roles(Role.Admin)
+  @UseGuards(AuthGuard(), RolesGuard)
+  async updateRole(@Param('id') id: string, @Body() payload: UpdateRoleDto) {
+    try {
+      await this.authService.updateRole(id, payload);
+      return {
+        success: true,
+        message: 'Role updated successfully.',
+      };
+    } catch (error) {
+      throw new ForbiddenException(error?.message);
+    }
   }
 }

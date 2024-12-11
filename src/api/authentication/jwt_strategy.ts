@@ -1,9 +1,9 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { PassportStrategy } from '@nestjs/passport';
-import { Strategy, ExtractJwt } from 'passport-jwt';
-import { User, UserDocument } from './entities/user.entity';
 import { Model } from 'mongoose';
+import { ExtractJwt, Strategy } from 'passport-jwt';
+import { User, UserDocument } from './entities/user.entity';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -16,11 +16,11 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
   async validate(payload) {
     const { id } = payload;
-
     const user = await this.userModel.findById({
       _id: id,
     });
 
+    // if user is not found
     if (!user) {
       throw new UnauthorizedException();
     }
