@@ -8,7 +8,7 @@ export class Lesson {
   @Prop({ required: true })
   title: string;
 
-  @Prop({ required: true })
+  @Prop({ unique: [true, 'Lesson is exist with this number'] })
   number: number;
 }
 

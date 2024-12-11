@@ -13,16 +13,24 @@ export class LessonService {
   ) {}
 
   /**
-   *
+   * create lesson
    * @param payload CreateLessonDto
    * @returns
    */
-  create(payload: CreateLessonDto) {
+  async create(payload: CreateLessonDto) {
+    // check lesson is exist or not
+    const isExist = await this.lessonModel.findOne({ number: payload.number });
+    console.log(isExist);
+    // if exist then throw exception
+    if (isExist) {
+      throw new ForbiddenException('Lesson is exist with this number');
+    }
+
     return this.lessonModel.create(payload);
   }
 
   /**
-   *
+   * get all lessons
    * @returns [Lesson]
    */
   findAll() {
@@ -30,7 +38,7 @@ export class LessonService {
   }
 
   /**
-   *
+   * get single lesson
    * @param _id - object id
    * @returns
    */
@@ -39,7 +47,7 @@ export class LessonService {
   }
 
   /**
-   *
+   * update lesson
    * @param _id - object id
    * @param payload - UpdateLessonDto
    * @returns
@@ -58,7 +66,7 @@ export class LessonService {
   }
 
   /**
-   *
+   * remove a lesson
    * @param _id - string
    * @returns
    */

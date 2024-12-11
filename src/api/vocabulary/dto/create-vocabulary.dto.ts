@@ -31,6 +31,5 @@ export class CreateVocabularyDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  @IsMongoId()
   adminEmail: string;
 }

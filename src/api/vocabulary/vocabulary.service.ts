@@ -26,7 +26,10 @@ export class VocabularyService {
    * @returns [Vocabulary]
    */
   findAll() {
-    return this.vocabularyModel.find({});
+    return this.vocabularyModel
+      .find({})
+      .populate('lessonNo', 'title number')
+      .exec();
   }
 
   /**

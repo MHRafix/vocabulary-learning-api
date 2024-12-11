@@ -1,6 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import mongoose, { Document } from 'mongoose';
-import { User } from 'src/api/authentication/entities/user.entity';
+import { Document, Types } from 'mongoose';
 import { Lesson } from 'src/api/lesson/entities/lesson.entity';
 
 export type VocabularyDocument = Vocabulary & Document;
@@ -20,17 +19,13 @@ export class Vocabulary {
   whenToSay: string;
 
   @Prop({
-    type: mongoose.Schema.Types.ObjectId,
+    type: Types.ObjectId,
     ref: Lesson.name,
     required: true,
   })
   lessonNo: string;
 
-  @Prop({
-    type: mongoose.Schema.Types.ObjectId,
-    ref: User.name,
-    required: true,
-  })
+  @Prop()
   adminEmail: string;
 }
 
