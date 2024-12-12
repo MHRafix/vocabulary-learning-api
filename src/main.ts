@@ -12,6 +12,9 @@ async function bootstrap() {
     ignoreEnvFile: true,
   });
 
+  // prevent cors err
+  app.enableCors();
+
   // default postman support
   const config = new DocumentBuilder()
     .setTitle('Vocabulary Learning Application')
