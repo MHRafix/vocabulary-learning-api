@@ -8,12 +8,23 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.useGlobalPipes(new ValidationPipe());
 
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+      whitelist: true,
+      forbidNonWhitelisted: true,
+    }),
+  );
+
   ConfigModule.forRoot({
     ignoreEnvFile: true,
   });
 
-  // prevent cors err
-  app.enableCors();
+  app.enableCors({
+    origin: '*', // Allow requests from specific origin(s)
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true, // Enable credentials
+  });
 
   // default postman support
   const config = new DocumentBuilder()
