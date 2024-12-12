@@ -88,9 +88,31 @@ export class AuthenticationService {
     return { token };
   }
 
+  /**
+   * find a user
+   * @param _id string
+   * @returns
+   */
+  async findOne(_id: string) {
+    // check is user exist
+    const user = await this.userModel.findOne({ _id });
+
+    // if user is not exist
+    if (!user) {
+      throw new UnauthorizedException('User is not exist!');
+    }
+
+    return user;
+  }
+
+  /**
+   * update user role
+   * @param _id - string
+   * @param payload UpdateRoleDto
+   * @returns
+   */
   async updateRole(_id: string, payload: UpdateRoleDto) {
     const { role } = payload;
-    console.log({ _id });
     // check is user exist
     const isUserExist = await this.userModel.findById({ _id });
 

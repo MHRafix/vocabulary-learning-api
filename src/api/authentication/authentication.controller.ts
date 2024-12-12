@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   ForbiddenException,
+  Get,
   Param,
   Patch,
   Post,
@@ -38,6 +39,19 @@ export class AuthenticationController {
       return this.authService.signIn(payload);
     } catch (error) {
       throw new ForbiddenException('Failed to sign in.');
+    }
+  }
+
+  @Get(':id')
+  @ApiBearerAuth()
+  @ApiOperation({ description: 'Logged in user can access ' })
+  @UseGuards(AuthGuard())
+  findOne(@Param('id') id: string) {
+    console.log(id);
+    try {
+      return this.authService.findOne(id);
+    } catch (error) {
+      throw new ForbiddenException('Failed to find user.');
     }
   }
 
