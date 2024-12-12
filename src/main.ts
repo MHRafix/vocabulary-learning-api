@@ -22,10 +22,10 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('docs', app, document);
 
-  await app.listen(process.env.PORt, () => {
+  await app.listen(process.env.PORT, () => {
     console.log(
       'Vocabulary Learning Application server is running on port :--',
-      8800,
+      process.env.PORT,
     );
   });
 }
