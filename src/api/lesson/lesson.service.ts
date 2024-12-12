@@ -1,6 +1,7 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { VocabularyService } from './../vocabulary/vocabulary.service';
 import { CreateLessonDto } from './dto/create-lesson.dto';
 import { UpdateLessonDto } from './dto/update-lesson.dto';
 import { Lesson, LessonDocument } from './entities/lesson.entity';
@@ -10,6 +11,7 @@ export class LessonService {
   constructor(
     @InjectModel(Lesson.name)
     private lessonModel: Model<LessonDocument>,
+    private vocabularyService: VocabularyService,
   ) {}
 
   /**
@@ -20,7 +22,7 @@ export class LessonService {
   async create(payload: CreateLessonDto) {
     // check lesson is exist or not
     const isExist = await this.lessonModel.findOne({ number: payload.number });
-    console.log(isExist);
+
     // if exist then throw exception
     if (isExist) {
       throw new ForbiddenException('Lesson is exist with this number');
@@ -33,8 +35,25 @@ export class LessonService {
    * get all lessons
    * @returns [Lesson]
    */
-  findAll() {
-    return this.lessonModel.find({});
+  async findAll() {
+    let lessons = await this.lessonModel.find({});
+    let newLessons = [];
+
+    await Promise.all(
+      lessons.map(async (lesson) => {
+        const count = await this.vocabularyService.findByLessonId(
+          lesson?._id.toString(),
+        );
+        newLessons.push({
+          _id: lesson?._id,
+          title: lesson?.title,
+          number: lesson?.number,
+          vocabularyCount: count,
+        });
+      }),
+    );
+
+    return newLessons;
   }
 
   /**

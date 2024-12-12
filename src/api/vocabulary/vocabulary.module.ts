@@ -14,5 +14,6 @@ import { VocabularyService } from './vocabulary.service';
   ],
   controllers: [VocabularyController],
   providers: [VocabularyService],
+  exports: [VocabularyService],
 })
 export class VocabularyModule {}
