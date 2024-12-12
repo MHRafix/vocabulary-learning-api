@@ -62,7 +62,7 @@ export class LessonService {
    * @returns
    */
   findOne(_id: string) {
-    return this.lessonModel.find({ _id });
+    return this.lessonModel.findOne({ _id });
   }
 
   /**
