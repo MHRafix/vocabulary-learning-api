@@ -91,6 +91,14 @@ export class AuthenticationService {
   }
 
   /**
+   * find all users
+   * @returns
+   */
+  async findAll() {
+    return this.userModel.find({}, '-password').exec();
+  }
+
+  /**
    * find a user
    * @param _id string
    * @returns

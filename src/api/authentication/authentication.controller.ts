@@ -42,12 +42,24 @@ export class AuthenticationController {
     }
   }
 
+  @Get('/users')
+  @ApiBearerAuth()
+  @ApiOperation({ description: 'Logged in user can access ' })
+  @Roles(Role.Admin)
+  @UseGuards(AuthGuard(), RolesGuard)
+  findAll() {
+    try {
+      return this.authService.findAll();
+    } catch (error) {
+      throw new ForbiddenException('Failed to find user.');
+    }
+  }
+
   @Get(':id')
   @ApiBearerAuth()
   @ApiOperation({ description: 'Logged in user can access ' })
   @UseGuards(AuthGuard())
   findOne(@Param('id') id: string) {
-    console.log(id);
     try {
       return this.authService.findOne(id);
     } catch (error) {
