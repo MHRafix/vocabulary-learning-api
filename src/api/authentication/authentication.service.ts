@@ -24,7 +24,9 @@ export class AuthenticationService {
    * @param payload signup payload
    * @returns
    */
-  async signUp(payload: RegistrationDto): Promise<{ token: string }> {
+  async signUp(
+    payload: RegistrationDto,
+  ): Promise<{ token: string; _id: string }> {
     const { name, email, password, avatar, role } = payload;
     const hashedPass = await bcrypt.hash(password, 10);
 
@@ -52,7 +54,7 @@ export class AuthenticationService {
       email: user?.email,
     });
 
-    return { token };
+    return { token, _id: user._id };
   }
 
   /**
@@ -60,19 +62,19 @@ export class AuthenticationService {
    * @param payload - signin payload
    * @returns
    */
-  async signIn(payload: LoginDto): Promise<{ token: string }> {
+  async signIn(payload: LoginDto): Promise<{ token: string; _id: string }> {
     const { email, password } = payload;
 
     // check is user exist
-    const isUserExist = await this.userModel.findOne({ email });
+    const user = await this.userModel.findOne({ email });
 
     // if user is not exist
-    if (!isUserExist) {
+    if (!user) {
       throw new UnauthorizedException('Email is not correct!');
     }
 
     // check is password matched
-    const isMatchedPass = await bcrypt.compare(password, isUserExist.password);
+    const isMatchedPass = await bcrypt.compare(password, user.password);
 
     // if password is incorrect
     if (!isMatchedPass) {
@@ -81,11 +83,11 @@ export class AuthenticationService {
 
     // make token and return
     const token = this.jwtService.sign({
-      id: isUserExist._id,
-      email: isUserExist?.email,
+      id: user._id,
+      email: user?.email,
     });
 
-    return { token };
+    return { token, _id: user?._id };
   }
 
   /**
@@ -102,7 +104,13 @@ export class AuthenticationService {
       throw new UnauthorizedException('User is not exist!');
     }
 
-    return user;
+    return {
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      avatar: user.avatar,
+      role: user.role,
+    };
   }
 
   /**
