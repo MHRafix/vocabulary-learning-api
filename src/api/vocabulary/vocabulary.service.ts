@@ -65,7 +65,7 @@ export class VocabularyService {
 
     // data and total count
     const [vocabularies, total] = await Promise.all([
-      this.vocabularyModel.find().skip(skip).limit(limit).exec(),
+      this.vocabularyModel.find({lessonNo: id}).skip(skip).limit(limit).exec(),
       this.vocabularyModel.countDocuments().exec(),
     ]);
     return { vocabularies, total, hasNext: page * limit < total };
