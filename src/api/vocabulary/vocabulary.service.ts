@@ -2,6 +2,7 @@ import { ForbiddenException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CreateVocabularyDto } from './dto/create-vocabulary.dto';
+import { PaginationQueryDto } from './dto/pagination.dto';
 import { UpdateVocabularyDto } from './dto/update-vocabulary.dto';
 import { Vocabulary, VocabularyDocument } from './entities/vocabulary.entity';
 
@@ -54,10 +55,20 @@ export class VocabularyService {
   /**
    * find vocabulary by lesson
    * @param id object id
+   * @param page number
+   * @param limit number
    * @returns
    */
-  async findAllByLessonId(id: string) {
-    return this.vocabularyModel.find({ lessonNo: id });
+  async findAllByLessonId(id: string, paginationQuery: PaginationQueryDto) {
+    const { page = 1, limit = 1 } = paginationQuery;
+    const skip = (page - 1) * limit;
+
+    // data and total count
+    const [vocabularies, total] = await Promise.all([
+      this.vocabularyModel.find().skip(skip).limit(limit).exec(),
+      this.vocabularyModel.countDocuments().exec(),
+    ]);
+    return { vocabularies, total, hasNext: page * limit < total };
   }
 
   /**

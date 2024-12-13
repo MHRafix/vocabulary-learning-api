@@ -7,16 +7,23 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiQuery,
+  ApiTags,
+} from '@nestjs/swagger';
 import { Roles } from 'src/app/decorators/role.decorator';
 import { RolesGuard } from 'src/app/guards/role-guard';
 import { Role } from '../authentication/entities/user.entity';
 import { CreateVocabularyDto } from './dto/create-vocabulary.dto';
 import { UpdateVocabularyDto } from './dto/update-vocabulary.dto';
 import { VocabularyService } from './vocabulary.service';
+import { PaginationQueryDto } from './dto/pagination.dto';
 
 @Controller('vocabularies')
 @ApiTags('Vocabulary')
@@ -51,11 +58,15 @@ export class VocabularyController {
   @Get('/findByLessonId/:id')
   @ApiBearerAuth()
   @ApiOperation({ description: 'Anyone can access ' })
+  @ApiQuery({ name: 'page', required: false, type: Number })
+  @ApiQuery({ name: 'limit', required: false, type: Number })
   @UseGuards(AuthGuard())
-  findByLessonId(@Param('id') id: string) {
-    console.log(id);
+  findByLessonId(
+    @Param('id') id: string,
+    @Query() paginationQuery: PaginationQueryDto,
+  ) {
     try {
-      return this.vocabularyService.findAllByLessonId(id);
+      return this.vocabularyService.findAllByLessonId(id, paginationQuery);
     } catch (error) {
       throw new ForbiddenException('Failed to find vocabularies.');
     }
