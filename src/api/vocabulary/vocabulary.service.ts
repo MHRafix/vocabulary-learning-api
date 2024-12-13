@@ -52,6 +52,15 @@ export class VocabularyService {
   }
 
   /**
+   * find vocabulary by lesson
+   * @param id object id
+   * @returns
+   */
+  async findAllByLessonId(id: string) {
+    return this.vocabularyModel.find({ lessonNo: id });
+  }
+
+  /**
    * update a single vocabulary
    * @param id objectId
    * @param updateVocabularyDto

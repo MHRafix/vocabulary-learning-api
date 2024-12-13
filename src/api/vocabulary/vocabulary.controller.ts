@@ -48,6 +48,19 @@ export class VocabularyController {
     }
   }
 
+  @Get('/findByLessonId/:id')
+  @ApiBearerAuth()
+  @ApiOperation({ description: 'Anyone can access ' })
+  @UseGuards(AuthGuard())
+  findByLessonId(@Param('id') id: string) {
+    console.log(id);
+    try {
+      return this.vocabularyService.findAllByLessonId(id);
+    } catch (error) {
+      throw new ForbiddenException('Failed to find vocabularies.');
+    }
+  }
+
   @Get(':id')
   @ApiBearerAuth()
   @ApiOperation({ description: 'Anyone can access ' })
